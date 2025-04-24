@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:systemMetadata xmlns:ns2="http://ns.dataone.org/service/types/v1" xmlns:ns3="http://ns.dataone.org/service/types/v2.0">
+    <serialVersion>23</serialVersion>
+    <identifier>ess-dive-2c92a59b0d0ee41-20240405T151122196911</identifier>
+    <formatId>text/csv</formatId>
+    <size>8970</size>
+    <checksum algorithm="MD5">995dd046325d0ced48c9c6b18bf9164d</checksum>
+    <submitter>http://orcid.org/0000-0003-3265-7990</submitter>
+    <rightsHolder>http://orcid.org/0000-0003-3265-7990</rightsHolder>
+    <accessPolicy>
+        <allow>
+            <subject>CN=NGEE-Tropics Admins,DC=dataone,DC=org</subject>
+            <permission>read</permission>
+            <permission>write</permission>
+            <permission>changePermission</permission>
+        </allow>
+        <allow>
+            <subject>CN=ess-dive-admins,DC=dataone,DC=org</subject>
+            <permission>read</permission>
+            <permission>write</permission>
+            <permission>changePermission</permission>
+        </allow>
+        <allow>
+            <subject>public</subject>
+            <permission>read</permission>
+        </allow>
+        <allow>
+            <subject>http://orcid.org/0000-0003-3265-7990</subject>
+            <permission>read</permission>
+            <permission>write</permission>
+            <permission>changePermission</permission>
+        </allow>
+        <allow>
+            <subject>CN=urn:node:ESS_DIVE,DC=dataone,DC=org</subject>
+            <permission>read</permission>
+            <permission>write</permission>
+            <permission>changePermission</permission>
+        </allow>
+        <allow>
+            <subject>CN=ess-dive-publish,DC=dataone,DC=org</subject>
+            <permission>read</permission>
+        </allow>
+    </accessPolicy>
+    <replicationPolicy replicationAllowed="true" numberReplicas="2">
+        <preferredMemberNode>urn:node:KNB</preferredMemberNode>
+        <preferredMemberNode>urn:node:mnORC1</preferredMemberNode>
+        <preferredMemberNode>urn:node:KNB</preferredMemberNode>
+        <preferredMemberNode>urn:node:mnORC1</preferredMemberNode>
+        <blockedMemberNode>urn:node:mnUNM1</blockedMemberNode>
+        <blockedMemberNode>urn:node:mnUCSB1</blockedMemberNode>
+        <blockedMemberNode>urn:node:US_MPC</blockedMemberNode>
+        <blockedMemberNode>urn:node:NMEPSCOR</blockedMemberNode>
+        <blockedMemberNode>urn:node:PPBIO</blockedMemberNode>
+        <blockedMemberNode>urn:node:mnUNM1</blockedMemberNode>
+        <blockedMemberNode>urn:node:mnUCSB1</blockedMemberNode>
+        <blockedMemberNode>urn:node:US_MPC</blockedMemberNode>
+        <blockedMemberNode>urn:node:NMEPSCOR</blockedMemberNode>
+        <blockedMemberNode>urn:node:PPBIO</blockedMemberNode>
+    </replicationPolicy>
+    <archived>false</archived>
+    <dateUploaded>2024-04-05T15:11:23.574+00:00</dateUploaded>
+    <dateSysMetadataModified>2024-10-28T22:50:59.623+00:00</dateSysMetadataModified>
+    <originMemberNode>urn:node:ESS_DIVE</originMemberNode>
+    <authoritativeMemberNode>urn:node:ESS_DIVE</authoritativeMemberNode>
+    <replica>
+        <replicaMemberNode>urn:node:ESS_DIVE</replicaMemberNode>
+        <replicationStatus>completed</replicationStatus>
+        <replicaVerified>2025-03-17T18:30:17.643+00:00</replicaVerified>
+    </replica>
+    <fileName>NGT0201_locations.csv</fileName>
+</ns3:systemMetadata>

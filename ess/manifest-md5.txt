@@ -1,0 +1,3 @@
+995dd046325d0ced48c9c6b18bf9164d data/NGT0201_locations.csv
+54b34ebc638a855bebcd1e6b1580b8fd data/ForestGEO.AMSs.2022.damage.paper_20230314191302.csv
+f26e584a93877d0845f32632a50be4a1 data/NGT0201_acknowledgements.txt

@@ -1,0 +1,56 @@
+<rdf:RDF
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://purl.org/spar/cito/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" > 
+  <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682">
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2025-04-24T21:32:52.397Z</dcterms:modified>
+    <dc:creator rdf:nodeID="A0"/>
+    <rdf:type rdf:resource="http://www.openarchives.org/ore/terms/ResourceMap"/>
+    <dcterms:identifier>ess-dive-d5736f73b321459-20241028T151458080682</dcterms:identifier>
+    <dcterms:creator>DataONE.org Python ITK 3.5.2</dcterms:creator>
+    <ore:describes rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682#aggregation"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.openarchives.org/ore/terms/Aggregation">
+    <rdfs:isDefinedBy rdf:resource="http://www.openarchives.org/ore/terms/"/>
+    <rdfs:label>Aggregation</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/ess-dive-a759254a8588be3-20241028T151453406608">
+    <ore:isAggregatedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682#aggregation"/>
+    <dcterms:identifier>ess-dive-a759254a8588be3-20241028T151453406608</dcterms:identifier>
+    <j.0:documents rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-fe94009e73ca279-20240405T151124121949"/>
+    <j.0:documents rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-50d71d759c7c879-20240405T151126152801"/>
+    <j.0:documents rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-2c92a59b0d0ee41-20240405T151122196911"/>
+    <j.0:documents rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-a759254a8588be3-20241028T151453406608"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682#aggregation">
+    <rdf:type rdf:resource="http://www.openarchives.org/ore/terms/Aggregation"/>
+    <ore:aggregates rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-a759254a8588be3-20241028T151453406608"/>
+    <ore:aggregates rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-fe94009e73ca279-20240405T151124121949"/>
+    <ore:aggregates rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-50d71d759c7c879-20240405T151126152801"/>
+    <ore:aggregates rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-2c92a59b0d0ee41-20240405T151122196911"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:type rdf:resource="http://purl.org/dc/terms/Agent"/>
+    <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Foresite ORE Library</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/ess-dive-fe94009e73ca279-20240405T151124121949">
+    <ore:isAggregatedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682#aggregation"/>
+    <dcterms:identifier>ess-dive-fe94009e73ca279-20240405T151124121949</dcterms:identifier>
+    <j.0:isDocumentedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-a759254a8588be3-20241028T151453406608"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/ess-dive-2c92a59b0d0ee41-20240405T151122196911">
+    <ore:isAggregatedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682#aggregation"/>
+    <dcterms:identifier>ess-dive-2c92a59b0d0ee41-20240405T151122196911</dcterms:identifier>
+    <j.0:isDocumentedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-a759254a8588be3-20241028T151453406608"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://cn.dataone.org/cn/v2/resolve/ess-dive-50d71d759c7c879-20240405T151126152801">
+    <ore:isAggregatedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-d5736f73b321459-20241028T151458080682#aggregation"/>
+    <dcterms:identifier>ess-dive-50d71d759c7c879-20240405T151126152801</dcterms:identifier>
+    <j.0:isDocumentedBy rdf:resource="https://cn.dataone.org/cn/v2/resolve/ess-dive-a759254a8588be3-20241028T151453406608"/>
+  </rdf:Description>
+</rdf:RDF>
