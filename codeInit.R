@@ -6,6 +6,7 @@ library(ssmodels)
 # Lê o CSV com atenção para strings vazias ou lixo
 df <- read.csv("ess/data/ForestGEO.csv",
                na.strings = c("", "NA", "?", "NULL", "null", "–", " ", "-", "N/A"))
+
 # Pre-processamento dos dados
 df <- df %>%
   mutate(
@@ -15,18 +16,6 @@ df <- df %>%
     H_considering_damage = as.numeric(H_considering_damage),
     weights.ind         = as.numeric(weights.ind),
     site                = factor(site),
-    sel                 = status == "A"  # TRUE se viva
-  )
-
-# Criacao de variaveis adicionais e limpeza
-df <- df %>%
-  mutate(
-    dbh.full.census.num     = suppressWarnings(as.numeric(as.character(dbh.full.census))),
-    meanWD                  = as.numeric(meanWD),
-    hom                     = as.numeric(hom),
-    H_considering_damage    = as.numeric(H_considering_damage),
-    weights.ind             = as.numeric(weights.ind),
-    site                    = factor(site),
     sel                     = as.integer(status == "A"),
     log_dbh                 = log(dbh.full.census.num),
     date.ams                = as.Date(date.ams),
@@ -47,20 +36,38 @@ df <- df %>%
   ) %>%
   droplevels()
 
+boxplot(df$H_considering_damage)
+table(df$H_considering_damage)
+
+df %>%
+  mutate(ano = year(date.ams)) %>%
+  group_by(ano) %>%
+  summarise(
+    total_arvores = n(),
+    mortas = sum(sel == 0),
+    percentual_mortalidade = 100 * mortas / total_arvores
+  ) %>%
+  pull(percentual_mortalidade) %>%
+  mean(na.rm = TRUE)
+
+
 # Criar logH somente onde H_considering_damage está disponível (ou zero se for censurado)
 df <- df %>%
   mutate(
     H_considering_damage = ifelse(sel, H_considering_damage, 0),
-    logH = log1p(H_considering_damage)
-  )
-
-df <- df %>%
-  mutate(
+    logH = log1p(H_considering_damage),
     b = as.numeric(b),
     b = ifelse(is.na(b) & sel == 0, 0, b)
   ) %>%
   filter(!is.na(b), is.finite(b))
 
+df <- df %>% mutate(b = b / 100,
+                    log_dbh_z            = scale(log_dbh),
+                    meanWD_z             = scale(meanWD),
+                    hom_z                = scale(hom),
+                    time_since_census_z  = scale(time_since_census),
+                    b_z                  = scale(b)
+)
 
 # Verificar a censura
 
@@ -69,21 +76,8 @@ table(df$sel)
 # FALSE   TRUE 
 #  5000  140000
 
-df <- df %>% mutate(b = b / 100)
-df <- df %>%
-  mutate(
-    log_dbh_z            = scale(log_dbh),
-    meanWD_z             = scale(meanWD),
-    hom_z                = scale(hom),
-    time_since_census_z  = scale(time_since_census),
-    b_z                  = scale(b)
-  )
-
-
 selectEq  <- sel ~ log_dbh_z + meanWD_z + time_since_census_z
 outcomeEq <- logH ~ log_dbh_z + b_z + site
-
-
 
 modelo_heckit <- selection(
   selection = selectEq,
@@ -91,38 +85,31 @@ modelo_heckit <- selection(
   data      = df)
 summary(modelo_heckit)
 
-
-start_manual <- coef(modelo_heckit, part = "full")
-start_manual <- unname(start_manual)  # remove nomes para o ssmodels
-
-
 modelo_cl <- HeckmanCL(
   selection = selectEq,
   outcome   = outcomeEq,
-  data      = df,
-  start     = start_manual
-)
+  data      = df)
 summary(modelo_cl)
 
-start_ts <- c(start_manual, 5)  # df = 5 (graus de liberdade)
+#start_ts <- c(start_manual, 5)  # df = 5 (graus de liberdade)
 modelo_ts <- HeckmantS(
   selection = selectEq,
   outcome   = outcomeEq,
   data      = df,
-  df        = 5,
-  start     = start_ts
-)
+  df        = 5)
 summary(modelo_ts)
 
-start_sk <- c(start_manual, 0.5)  # lambda = 0.5 (assimetria moderada)
+#start_sk <- c(start_manual, 0.5)  # lambda = 0.5 (assimetria moderada)
 modelo_sk <- HeckmanSK(
   selection = selectEq,
   outcome   = outcomeEq,
   data      = df,
-  lambda    = 0.5,
-  start     = start_sk
-)
+  lambda    = 0.5)
 summary(modelo_sk)
+
+start_manual <- coef(modelo_heckit, part = "full")
+start_manual <- unname(start_manual)  # remove nomes para o ssmodels
+
 
 start_bs <- c(start_manual, 1)  # phi1 = 1
 start_bs <- pmax(start_bs, -0.99)  # evita valores fora do domínio
@@ -162,4 +149,13 @@ modelo_bs <- HeckmanBS(
 )
 
 
-
+table(df$site)
+teste1 <- df %>% filter(site == "bci")
+selectEq  <- sel ~ log_dbh_z + meanWD_z + time_since_census_z
+outcomeEq <- logH ~ log_dbh_z + b_z 
+modelo_heckit <- selection(
+  selection = selectEq,
+  outcome   = outcomeEq,
+  data      = teste1)
+summary(modelo_heckit)
+table(teste1$sel)
