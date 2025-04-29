@@ -8,20 +8,49 @@ library(httr2)
 # Lê o CSV com atenção para strings vazias ou lixo
 df <- read.csv("ess/data/ForestGEO.csv",
                na.strings = c("", "NA", "?", "NULL", "null", "–", " ", "-", "N/A"))
-names(df) <- c("Local", 
-               "IDMort", 
-               "ID", 
-               "DataCenso", 
-               "DAP", 
-               "AltDAP", 
-               "DENS", 
-               "DataPesq",
-               "Status",
-               "Alt",
-               "PropVol",
-               "Freq")
-head(df)
-df$DAPcm <- df$DAP/10
+
+# Pre-processamento dos dados
+df <- df %>%
+  mutate(
+    DAP                 = suppressWarnings(as.numeric(as.character(dbh.full.census)))/10,
+    DENS                = as.numeric(meanWD),
+    AltDAP              = as.numeric(hom),
+    AltCDano            = as.numeric(H_considering_damage),
+    Prop                = as.numeric(weights.ind),
+    Local               = factor(site),
+    sel                 = as.integer(status == "A"),
+    date.ams            = as.Date(date.ams),
+    date.full.census    = as.Date(date.full.census),
+    time_since_census   = as.numeric(date.ams - date.full.census)
+  ) %>%
+  filter(
+    !is.na(sel),
+    !is.na(DAP),
+    !is.na(DENS),
+    !is.na(AltDAP),
+    !is.na(Local),
+    !is.na(time_since_census),
+    !is.na(Prop),
+    is.finite(DAP),
+    is.finite(Prop),
+    is.finite(time_since_census)
+  ) %>%
+  droplevels()
+
+#names(df) <- c("Local", 
+#               "IDMort", 
+#               "ID", 
+#               "DataCenso", 
+#               "DAP", 
+#               "AltDAP", 
+#               "DENS", 
+#               "DataPesq",
+#               "Status",
+#               "Alt",
+#               "PropVol",
+#               "Freq")
+#head(df)
+#df$DAP <- df$DAP/10
 # Definir coordenadas dos locais
 coord_local <- data.frame(
   Local = c("amacayacu", "yasuni", "pasoh", "bci", "hkk", "kc", "fushan"),
@@ -41,11 +70,11 @@ IndexE <- readRDS("IndexE.Rds")
 df <- merge(df, IndexE, by = "Local")
 
 # Aplicar a fórmula de altura diretamente:
-df$H1 <- exp(0.893 - df$E + 0.760 * log(df$DAPcm) - 0.0340 * (log(df$DAPcm))^2)
+df$H1 <- exp(0.893 - df$E + 0.760 * log(df$DAP) - 0.0340 * (log(df$DAP))^2)
 
 # Aplicar a fórmula de McEwan et al. (2011) apenas para o Local 'fushan'
 # Para todas as árvores de Fushan, calcular altura com fórmula local
-df$H1[df$Local == "fushan"] <- 36.1 * (1 - exp(-0.013 * df$DAPcm[df$Local == "fushan"]))
+df$H1[df$Local == "fushan"] <- 36.1 * (1 - exp(-0.013 * df$DAP[df$Local == "fushan"]))
 summary(df$H1[df$Local == "fushan"])
 
 # Corrigir altura máxima para cada Local
@@ -63,13 +92,13 @@ df$H1[df$Local == "fushan"    & df$H1 > 23] <- 23
 #                 0.0461*((log(df$DAP))^2))
 # Fórmula de Chave et al. (2014) com DAP, H e densidade
 #computeAGB retorna medidas em Mg: 1 megagrama (Mg) = 1.000 kg
-df$AGB <- 1000*computeAGB(df$DAPcm, df$DENS, H=df$H1)
-df$AGB2 <- 0.0673 * (df$DENS * (df$DAPcm^2) * df$H1)^0.976
+df$AGB <- (1000*computeAGB(df$DAP, df$DENS, H=df$H1))*df$Prop
+df$AGB2 <- (0.0673 * (df$DENS * (df$DAP^2) * df$H1)^0.976)*df$Prop
 
 summary(df$AGB)
 summary(df$AGB2)
-summary(df$DAPcm)
-hist(df$Freq)
+summary(df$DAP)
+hist(df$Prop)
 
 head(df[df$AGB > 10000, c("DAP", "H1", "DENS", "AGB", "AGB2")])
 # Histograma da AGB2
@@ -101,3 +130,48 @@ table(df$Gigante)
 
 subset(df, weights.ind > 0.1)
 head(df)
+
+
+
+# Criar logH somente onde H_considering_damage está disponível (ou zero se for censurado)
+df <- df %>%
+  mutate(
+    AltCDano = ifelse(sel, AltCDano, 0),
+    logH = log1p(AltCDano),
+    AGB = ifelse(sel, AGB, 0),
+    logAGB = log1p(AGB),
+    b = as.numeric(b),
+    b = ifelse(is.na(b) & sel == 0, 0, b)
+  ) %>%
+  filter(!is.na(b), is.finite(b))
+
+df <- df %>% mutate(b = b / 100,
+                    log_DAP              = scale(log(DAP)),
+                    DENS                 = scale(DENS),
+                    AltDAP                = scale(AltDAP),
+                    time_since_census_z  = scale(time_since_census),
+                    b_z                  = scale(b)
+)
+
+
+selectEq  <- sel ~ log_DAP + DENS + time_since_census_z
+outcomeEq <- logAGB ~ log_DAP + b_z + Local
+modelo_heckit <- selection(
+  selection = selectEq,
+  outcome   = outcomeEq,
+  data      = df)
+summary(modelo_heckit)
+
+start_manual <- coef(modelo_heckit, part = "full")
+start_manual <- unname(start_manual)  # remove nomes para o ssmodels
+
+
+start_manual <- c(start_manual, 5) 
+
+modelo_ts <- HeckmantS(
+  selection = selectEq,
+  outcome   = outcomeEq,
+  data      = df,
+  df        = 5,
+  start     = start_manual)
+summary(modelo_ts)
