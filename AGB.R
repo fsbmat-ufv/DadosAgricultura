@@ -31,11 +31,12 @@ coord_local <- data.frame(
 
 # Calcular E para cada local
 coord <- cbind(coord_local$long, coord_local$lat)
-E <- computeE(coord)
+#E <- computeE(coord)
 
 # Juntar E com os locais
-IndexE <- data.frame(Local = coord_local$Local, E = as.numeric(E))
-
+#IndexE <- data.frame(Local = coord_local$Local, E = as.numeric(E))
+#saveRDS(IndexE, "IndexE.Rds")
+IndexE <- readRDS("IndexE.Rds")
 # Juntar o índice E no seu dataframe
 df <- merge(df, IndexE, by = "Local")
 
@@ -68,7 +69,7 @@ df$AGB2 <- 0.0673 * (df$DENS * (df$DAPcm^2) * df$H1)^0.976
 summary(df$AGB)
 summary(df$AGB2)
 summary(df$DAPcm)
-
+hist(df$Freq)
 
 head(df[df$AGB > 10000, c("DAP", "H1", "DENS", "AGB", "AGB2")])
 # Histograma da AGB2
@@ -97,3 +98,6 @@ df$Gigante <- ifelse(df$AGB > 10000, "Sim", "Não")
 
 # Quantos gigantes
 table(df$Gigante)
+
+subset(df, weights.ind > 0.1)
+head(df)
