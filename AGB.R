@@ -58,6 +58,9 @@ names(df) <- c("Local",
               "sel", 
               "time_since_census",
               "logH")
+
+df <-  df %>% 
+  filter(!(sel == 1 & AltCDano == 0) & !(sel == 1 & Prop==0))
 #head(df)
 #df$DAP <- df$DAP/10
 # Definir coordenadas dos locais
@@ -123,17 +126,19 @@ cat("Número de árvores com AGB > 1 kg:", sum(df$AGB > 1, na.rm = TRUE), "\n")
 top_agb <- df[order(-df$AGB), c("DAP", "H1", "DENS", "AGB")]
 head(top_agb, 10)
 
-
 # Criar logH somente onde H_considering_damage está disponível (ou zero se for censurado)
 df <- df %>%
   mutate(
-    logAGB = ifelse(sel == 1 & is.finite(AGB) & AGB > 0, log(AGB), NA),
+    logAGB               = ifelse(sel == 1 & is.finite(AGB) & AGB > 0, log(AGB), NA),
+    AGB                  = ifelse(sel == 1 & is.finite(AGB) & AGB > 0, AGB, NA),
     logDAP               = log(DAP), 
     logDAP_z             = scale(log(DAP)),
     DENS_z               = scale(DENS),
     AltDAP_z             = scale(AltDAP),
     time_since_census_z  = scale(time_since_census),
     b_z                  = scale(PropVol))
+
+#saveRDS(df, "AGB.Rds")
 
 selectEq  <- sel ~ logDAP_z + DENS_z + time_since_census_z
 outcomeEq <- logAGB ~ logDAP_z + DENS_z + b_z + AltCDano + Local
