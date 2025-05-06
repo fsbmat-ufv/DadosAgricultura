@@ -141,7 +141,7 @@ df <- df %>%
 #saveRDS(df, "AGB.Rds")
 
 selectEq  <- sel ~ logDAP_z + DENS_z + time_since_census_z
-outcomeEq <- logAGB ~ logDAP_z + DENS_z + b_z + AltCDano + Local
+outcomeEq <- logAGB ~ logDAP_z + DENS_z + AltCDano + Local
 
 modelo_heckit <- selection(
   selection = selectEq,
@@ -151,7 +151,14 @@ summary(modelo_heckit)
 
 start_manual <- coef(modelo_heckit, part = "full")
 start_manual <- unname(start_manual)  # remove nomes para o ssmodels
+start_manual <- c(start_manual, 3) 
 
+modelo_ts <- HeckmantS(
+  selection = selectEq,
+  outcome   = outcomeEq,
+  data      = df,
+  start = start_manual)
+summary(modelo_ts)
 
 
 # Criar logH somente onde H_considering_damage está disponível (ou zero se for censurado)
@@ -167,14 +174,7 @@ modeloCL <- HeckmanCL(
 summary(modeloCL)
 
 
-start_manual <- c(start_manual, 5) 
 
-modelo_ts <- HeckmantS(
-  selection = selectEq,
-  outcome   = outcomeEq,
-  data      = df2,
-  start = start_manual)
-summary(modelo_ts)
 
 # Criar logH somente onde H_considering_damage está disponível (ou zero se for censurado)
 df2 <- df %>%
