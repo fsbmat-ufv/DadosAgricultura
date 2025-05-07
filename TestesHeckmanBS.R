@@ -172,11 +172,13 @@ library(ssmodels)
 selectEq  <- sel ~ logDAP_z + DENS_z + time_since_census_z
 outcomeEq <- AGB ~ logDAP_z + DENS_z + AltCDano
 source("HeckmanBS_mod.R")
+source("summary.HeckmanBS_mod.R")
 modelo_bs <- HeckmanBS_mod(
   selection = sel ~ logDAP_z + DENS_z + time_since_census_z,
-  outcome   = AGB ~ logDAP_z + DENS_z + AltCDano,
-  data      = df3)
+  outcome   = AGB ~ logDAP_z + DENS_z + AltCDano+Local,
+  data      = df2)
 modelo_bs$coefficients
+summary(modelo_bs)
 #Variavel resposta para ajuste dos demais modelos
 YO <- lnambx
 theta_HC <- optim(par,loglik_HC,gradlik_HC,method = "BFGS",hessian = T,control = list(fnscale=-1))

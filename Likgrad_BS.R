@@ -26,10 +26,10 @@ loglik_BS <- function(par){
   XS1.g <- exp(as.numeric(model.matrix(~XS1) %*% gamma))
   XO1.b <- exp(as.numeric(model.matrix(~XO1) %*% beta))
   
-  term0 <- ((YO1*(phi1+1)/(phi1*XO1.b))^(1/2)-((phi1*XO1.b)/(YO1*(phi1+1)))^(1/2))
-  term1 <- exp((-phi1/4)*(term0)^2)
-  term2 <- (((phi1+1)/(phi1*XO1.b*YO1))^(1/2)+((phi1*XO1.b)/((phi1+1)*(YO1^3)))^(1/2))
-  term3 <- (1/(2*sqrt(2*pi)))*((phi1/2)^(1/2))
+  term0 <- ((YO1*(phi1+1)/(phi1*XO1.b))^(1/2)-((phi1*XO1.b)/(YO1*(phi1+1)))^(1/2))#t0
+  term1 <- exp((-phi1/4)*(term0)^2)#t1
+  term2 <- (((phi1+1)/(phi1*XO1.b*YO1))^(1/2)+((phi1*XO1.b)/((phi1+1)*(YO1^3)))^(1/2))#t2
+  term3 <- (1/(4*sqrt(pi)))*(phi1^(1/2))#t3
   term4 <- (((phi2+1))/(2*XS1.g*(1-rho^2)))^(1/2)
   term5 <- ((phi2*XS1.g)/(phi2+1))-1
   term6 <- rho*(phi1/(2*(1-rho^2)))^(1/2)
