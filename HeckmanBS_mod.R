@@ -175,13 +175,17 @@ HeckmanBS_mod <- function (selection, outcome, data = sys.frame(sys.parent()),
     
     safe_rho <- pmax(abs(rho), 1e-6)
     safe_rho2 <- pmax(1 - rho^2, 1e-6)
-    df4rho_raw <- lambda_I * (term5 * term4 * (rho / safe_rho2) - 
-                                term0 * term6 / (safe_rho * safe_rho2))
+    
+    if (abs(rho) < 1e-8) {
+      df4rho_raw <- lambda_I * term0 * sqrt(phi1 / 2)
+    } else {
+      df4rho_raw <- lambda_I * (term5 * term4 * (rho / safe_rho2) + 
+                                  term0 * term6 / (safe_rho * safe_rho2))
+    }
     
     df4rho_raw <- pmin(pmax(df4rho_raw, -1e5), 1e5)
     d_rho <- (4 * exp(-rho_star)) / (1 + exp(-rho_star))^2
-    gr_rho_star <- 0.5 * df4rho_raw * d_rho
-    
+    gr_rho_star <- df4rho_raw * d_rho
     
     nParam <- length(par)
     gradient <- matrix(0, nrow = n, ncol = nParam)
@@ -195,6 +199,7 @@ HeckmanBS_mod <- function (selection, outcome, data = sys.frame(sys.parent()),
     if (any(!is.finite(grad_final))) return(rep(NA, length(par)))
     return(grad_final)
   }
+  
   
   
   
