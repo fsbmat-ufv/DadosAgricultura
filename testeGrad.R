@@ -1,4 +1,3 @@
-install.packages("numDeriv")  # Se ainda não tiver
 library(numDeriv)
 
 # Avaliação numérica do gradiente

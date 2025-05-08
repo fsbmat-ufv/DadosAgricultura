@@ -1,56 +1,52 @@
-summary.HeckmanBS_mod <- function(object, ...) {
-  est <- object$coefficients
-  se  <- object$prop_sigmaBS
-
-  # Trata possíveis NA em erros padrão
-  tval <- est / se
-  pval <- 2 * pnorm(-abs(tval))
-  pval[!is.finite(pval)] <- NA
-  tval[!is.finite(tval)] <- NA
-
-  summary_table <- data.frame(
-    Estimate     = est,
-    `Std. Error` = se,
-    `t value`    = tval,
-    `Pr(>|t|)`   = pval
-  )
-
-  # Adiciona nomes (se existirem em start)
-  if (!is.null(names(est)) && length(unique(names(est))) == length(est)) {
-    rownames(summary_table) <- names(est)
-  } else {
-    rownames(summary_table) <- paste0("par", seq_along(est))
+summary.HeckmanBS_mod <- function (object, ...) 
+  {
+    fisher_infoBS <- object$fisher_infoBS
+    prop_sigmaBS <- object$prop_sigmaBS
+    coeffsBS <- object$coefficients
+    counts <- object$counts
+    value <- object$value
+    loglik <- object$loglik
+    NObs <- object$NObs
+    nParam <- object$nParam
+    df <- object$df
+    NXS <- object$NXS
+    NXO <- object$NXO
+    N0 <- object$N0
+    N1 <- object$N1
+    aic <- object$aic
+    bic <- object$bic
+    tb <- miscTools::coefTable(coeffsBS, prop_sigmaBS, df = df)
+    tb1 <- miscTools::coefTable(coeffsBS[1:NXS], prop_sigmaBS[1:NXS], 
+                                df = df)
+    tb2 <- miscTools::coefTable(coeffsBS[(NXS + 1):(NXS + NXO)], 
+                                prop_sigmaBS[(NXS + 1):(NXS + NXO)], df = df)
+    tb3 <- miscTools::coefTable(coeffsBS[(NXS + NXO + 1):(NXS + 
+                                                            NXO + 2)], prop_sigmaBS[(NXS + NXO + 1):(NXS + NXO + 
+                                                                                                       2)], df = df)
+    cat("\n")
+    cat("--------------------------------------------------------------\n")
+    cat("   Birnbaum-Saunders Heckman Model (Package: ssmodels)        \n")
+    cat("--------------------------------------------------------------\n")
+    cat("--------------------------------------------------------------\n")
+    cat("Maximum Likelihood estimation \n")
+    cat("optim function with method BFGS-iterations numbers:", 
+        counts, "\n")
+    cat("Log-Likelihood:", value, "\n")
+    cat("AIC:", aic, "BIC:", bic, "\n")
+    cat("Number of observations:", NObs, "(", N0, "censored and", 
+        N1, "observed", ")", "\n")
+    cat(nParam, "free parameters", "(", "df=", df, ")", "\n")
+    cat("--------------------------------------------------------------\n")
+    cat("Probit selection equation:\n")
+    printCoefmat(tb1, signif.stars = TRUE, signif.legend = FALSE, 
+                 digits = 4)
+    cat("--------------------------------------------------------------\n")
+    cat("Outcome equation:\n")
+    printCoefmat(tb2, signif.stars = TRUE, signif.legend = FALSE, 
+                 digits = 4)
+    cat("--------------------------------------------------------------\n")
+    cat("Error terms:\n")
+    printCoefmat(tb3, signif.stars = TRUE, signif.legend = TRUE, 
+                 digits = 4)
+    cat("--------------------------------------------------------------\n")
   }
-  
-
-  # Separação por blocos
-  nXS <- object$NXS
-  nXO <- object$NXO
-  idx_gamma <- 1:nXS
-  idx_beta  <- (nXS + 1):(nXS + nXO)
-  idx_phi_rho <- (nXS + nXO + 1):length(est)
-
-  coef_sel <- summary_table[idx_gamma, , drop = FALSE]
-  coef_out <- summary_table[idx_beta,  , drop = FALSE]
-  coef_err <- summary_table[idx_phi_rho, , drop = FALSE]
-
-  cat("--------------------------------------------------------------\n")
-  cat(" Birnbaum-Saunders Heckman Model (Modificado)\n")
-  cat("--------------------------------------------------------------\n")
-  cat("Log-Likelihood:", round(object$loglik, 3), "\n")
-  cat("AIC:", round(object$aic, 0), "BIC:", round(object$bic, 0), "\n")
-  cat("Number of observations: (", object$N0, "censored and", object$N1, "observed )\n")
-  cat(length(est), "parameters ( df =", object$df, ")\n")
-  cat("--------------------------------------------------------------\n")
-  cat("Probit selection equation:\n")
-  print(coef_sel)
-  cat("--------------------------------------------------------------\n")
-  cat("Outcome equation:\n")
-  print(coef_out)
-  cat("--------------------------------------------------------------\n")
-  cat("Error terms:\n")
-  print(coef_err)
-  cat("--------------------------------------------------------------\n")
-
-  invisible(summary_table)
-}

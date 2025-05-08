@@ -53,7 +53,7 @@ table(df2$sel, useNA = "ifany")  # deve dar apenas 0 e 1
 anyNA(df2$sel)                   # deve ser FALSE
 
 
-df2 <- df2 %>%
+df <- df %>%
   mutate(logDAP          = log(DAP), 
     logDAP_z             = scale(log(DAP)),
     DENS_z               = scale(DENS),
@@ -176,9 +176,9 @@ source("summary.HeckmanBS_mod.R")
 modelo_bs <- HeckmanBS_mod(
   selection = sel ~ logDAP_z + DENS_z + time_since_census_z,
   outcome   = AGB ~ logDAP_z + DENS_z + AltCDano+Local,
-  data      = df2)
-modelo_bs$coefficients
+  data      = df)
 summary(modelo_bs)
+summary.HeckmanBS(modelo_bs)
 #Variavel resposta para ajuste dos demais modelos
 YO <- lnambx
 theta_HC <- optim(par,loglik_HC,gradlik_HC,method = "BFGS",hessian = T,control = list(fnscale=-1))
