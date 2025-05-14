@@ -176,9 +176,10 @@ source("summary.HeckmanBS_mod.R")
 modelo_bs <- HeckmanBS_mod(
   selection = sel ~ logDAP_z + DENS_z + time_since_census_z,
   outcome   = AGB ~ logDAP_z + DENS_z + AltCDano+Local,
-  data      = df)
+  data      = data)
 summary(modelo_bs)
 summary.HeckmanBS(modelo_bs)
+theta_BS <- modelo_bs$coefficients
 #Variavel resposta para ajuste dos demais modelos
 YO <- lnambx
 theta_HC <- optim(par,loglik_HC,gradlik_HC,method = "BFGS",hessian = T,control = list(fnscale=-1))
